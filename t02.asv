@@ -23,31 +23,28 @@ maxy = max(y)
 % play(audio);
 % info = audioinfo('TheLovecats8.wav')
 % b = 16;
-version = 2;
-if (1 == version)
-    % % % version sin pasar a bits  % Cuantizar a entero
-    b = 4;
-    swing = (2^b-1)/2 %14->8191.5 %10->512 %8->128 %4->8
-    xq_i    nt =(y*swing);
-    max(xq_int)
-    min(xq_int)
-    class(xq_int)
-    B = rescale(xq_int,-1,1)
-end
+
+% % % version sin pasar a bits  % Cuantizar a entero
+% b = 4;
+% swing = (2^b-1)/2 %14->8191.5 %10->512 %8->128 %4->8
+% xq_int =(y*swing);
+% max(xq_int)
+% min(xq_int)
+% class(xq_int)
+% B = rescale(xq_int,-1,1)
 
 % %  https://la.mathworks.com/matlabcentral/answers/48153-encoding-the-signal-with-14-bits
 % D = dec2bin( (xq_int), 14)
 % D = dec2bin(yswing);
 % D = D(:,1:14)
-
 b = 4; % Cantidad de bits 
 % % Cuantizar a entero y expresión en binario
 swing = (2^b-1)/2; 
 xq_int = round(y*swing+swing);
 max_xq_int = max(xq_int)
 min_xq_int = min(xq_int)
-xq_bin = de2bi(xq_int,14,'left-msb')
-decimal = bi2de(xq_bin,'left-msb') % Convert binary vectors to decimal numbers
+% xq_bin = de2bi(xq_int,14,'left-msb')
+% decimal = bi2de(xq_bin,'left-msb') % Convert binary vectors to decimal numbers
 % tipo = class(decimal)
 % min_decimal = min(decimal)
 % max_decimal = max(decimal)
