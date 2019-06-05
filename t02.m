@@ -74,7 +74,7 @@ ylabel('Mag espectro')
 xlabel('Frecuencia (log)')
 
 B = rescale(x,-1,1);
-audiowrite('C:\Users\ie696846\Documents\MATLAB\ie696846\TheLovecats_f10k.wav',x,Fs,'BitsPerSample',16);
+% audiowrite('C:\Users\ie696846\Documents\MATLAB\ie696846\TheLovecats_f10k.wav',x,Fs,'BitsPerSample',16);
 % audiowrite('/home/acc/Documents/MATLAB/ComunicacionesDigitales/TheLovecats_f10k.wav', B, Fs,'BitsPerSample',16);
 
 figure('Position',[100, 100, 400, 200]);
