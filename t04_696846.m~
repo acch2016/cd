@@ -27,7 +27,7 @@ lena = reshape(bi2de(bR),size(lenarec));
 isequal(lenarec,lena)
 imshow(uint8(lena))
 %%  Unipolar NRZ
-% correr primera seccion para obtener los bits
+% bits = randi([0 1],1024,1); % Generarte random bits
 mp = 10; % samples per pulse
 Fs = 96000;
 Ts = 1/Fs;
@@ -50,9 +50,9 @@ Ts = 1/Fs;
 Rs = Fs / mp;
 % polar nrz
 pbase = rectwin(mp); % Pulso completo;
-sym = (bits * 2)-1
+
 s = zeros(1,numel(bits)*mp);
-s(1:mp:end) = sym;
+s(1:mp:end) = ;
 stem(s(1:mp*16))
 wvtool(pbase)
 pnrz = conv(pbase,s);
@@ -65,12 +65,3 @@ Ts = 1/Fs;
 % The bit rate is Rb= Rs= Fs / mp, because 1 bit= 1 %symbol and % every symbol has mpsamples per bit
 Rs = Fs / mp;
 % bipolar nrz
-pbase = rectwin(mp); % Pulso completo;
-sym = bits() %TODO
-s = zeros(1,numel(bits)*mp);
-s(1:mp:end) = sym;
-stem(s(1:mp*16))
-wvtool(pbase)
-pnrz = conv(pbase,s);
-figure;pwelch(pnrz,[],[],[],Fs,'power'); %title('PSD of Unipolar NRZ');
-figure;plot(pnrz(1:mp*16))
