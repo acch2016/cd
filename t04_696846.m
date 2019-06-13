@@ -82,7 +82,7 @@ am(am == 0) = -1; % alternate mark (vector de -1s y 1s)
 bits(bits == 1) = am; % alternate mark inversion AMI (tres estados)
 %
 s = zeros(1,numel(bits)*mp);
-s(1:mp:end) = bits;
+s(1:mp:end) = bits;figure;
 subplot(3,1,1);stem(s(1:mp*16)); title('tren de impulsos');
 bnrz = conv(pbase,s);
 subplot(3,1,3);pwelch(bnrz,[],[],[],Fs,'power'); title('PSD of Bipolar NRZ');
