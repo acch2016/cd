@@ -2,8 +2,23 @@ clear all; clc;
 % diseño del filtro
 m = [1 1 0 0];
 o = 100;
+fprintf('para facilitar la revision se desplegaran instrucciones \n para elegir el linecode y el filtro \n\r');
+disp('filtro 1 fc = 0.046')
+disp('filtro 2 fc = 0.146')
+disp('filtro 3 fc = 0.246')
+disp('filtro 4 fc = 0.546')
+disp('filtro 5 fc = 0.8')
+fc = input('seleccione numero de filtro')
+switch fc
+    case 1
+        f = [0 0.046 0.046 1];
+        f1 = fir2(o,f,m);
+    case 2
+        
+end
+
 f = [0 0.046 0.046 1];
-f1 = fir2(o,f,m);
+
 % fvtool(f1)
 f = [0 0.146 0.146 1];
 f2 = fir2(o,f,m);
@@ -42,6 +57,12 @@ unrz = conv(pbase,s);
 % subplot(3,1,3);
 % figure;pwelch(unrz,[],[],[],Fs,'power'); title('PSD of Unipolar NRZ');
 %% Polar NRZ % 
+mp = 10; % samples per pulse
+Fs = 96000;
+Ts = 1/Fs;
+% The bit rate is Rb= Rs= Fs / mp, because 1 bit= 1 %symbol and % every symbol has mpsamples per bit
+Rs = Fs / mp;
+pbase = rectwin(mp); % Pulso completo;
 % wvtool(pbase);
 sym = (bits * 2)-1;
 s = zeros(1,numel(bits)*mp);
@@ -51,6 +72,12 @@ pnrz = conv(pbase,s);
 % subplot(3,1,3);
 % figure;pwelch(pnrz,[],[],[],Fs,'power'); title('PSD of Polar NRZ');
 %% Bipolar NRZ % 
+mp = 10; % samples per pulse
+Fs = 96000;
+Ts = 1/Fs;
+% The bit rate is Rb= Rs= Fs / mp, because 1 bit= 1 %symbol and % every symbol has mpsamples per bit
+Rs = Fs / mp;
+pbase = rectwin(mp); % Pulso completo;
 % wvtool(pbase)
 am = mod(1:length(bits(bits == 1)), 2); % 0s y 1s del tamaño de los bits en 1 en la variable bits
 am(am == 0) = -1; % alternate mark (vector de -1s y 1s)
@@ -65,8 +92,14 @@ bnrz = conv(pbase,s);
 % subplot(3,1,2);plot(bnrz(1:mp*16));title('Bipolar NRZ');
 % figure;powerbw(bnrz,Fs) % para obtener el bw de -3dB
 %% Manchester % %
+mp = 10; % samples per pulse
+Fs = 96000;
+Ts = 1/Fs;
+% The bit rate is Rb= Rs= Fs / mp, because 1 bit= 1 %symbol and % every symbol has mpsamples per bit
+Rs = Fs / mp;
+pbase = rectwin(mp); % Pulso completo;
 pM = [-ones(1,mp/2) ones(1,mp/2)]; %pulso base
-% wvtool(pM);
+wvtool(pM);
 sym = (bits * 2)-1;
 s = zeros(1,numel(bits)*mp);% tren de impulsos
 s(1:mp:end) = sym; %tren
@@ -208,6 +241,8 @@ y_s_xM_f1 = y_s_xM_f1(1:8712);
 % scatterplot(y_s_xM_f1)
 sym_Rx_xM_f1 = sign(y_s_xM_f1);
 bits_Rx_xM_f1 = (sym_Rx_xM_f1 +1)/2;
+% not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
+bits_Rx_xM_f1 = not(bits_Rx_xM_f1)
 
 y_s_xM_f2 = xM_f2(53:mp:end);
 numel(y_s_xM_f2) % 8718
@@ -215,6 +250,8 @@ y_s_xM_f2 = y_s_xM_f2(1:8712);
 % scatterplot(y_s_xM_f2)
 sym_Rx_xM_f2 = sign(y_s_xM_f2);
 bits_Rx_xM_f2 = (sym_Rx_xM_f2 +1)/2; 
+% not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
+bits_Rx_xM_f2 = not(bits_Rx_xM_f2)
 
 y_s_xM_f3 = xM_f3(53:mp:end);
 numel(y_s_xM_f3) % 8718
@@ -222,14 +259,19 @@ y_s_xM_f3 = y_s_xM_f3(1:8712);
 % scatterplot(y_s_xM_f3)
 sym_Rx_xM_f3 = sign(y_s_xM_f3);
 bits_Rx_xM_f3 = (sym_Rx_xM_f3 +1)/2;
+% not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
+bits_Rx_xM_f3 = not(bits_Rx_xM_f3) 
 
-%% hacer un not en el receptor de los bits
+%% 
 y_s_xM_f5 = xM_f5(53:mp:end);
 numel(y_s_xM_f5) % 8718
 y_s_xM_f5 = y_s_xM_f5(1:8712);
 % scatterplot(y_s_xM_f5)
 sym_Rx_xM_f5 = sign(y_s_xM_f5);
 bits_Rx_xM_f5 = (sym_Rx_xM_f5 +1)/2;
+% not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
+bits_Rx_xM_f5 = not(bits_Rx_xM_f5)
+
 %%
 % % % % % % % % % % % % % % % % % % % % Bipolar NRZ 
 y_s_bnrz_f1 = bnrz_f1(55:mp:end);
