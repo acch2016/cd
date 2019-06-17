@@ -2,23 +2,30 @@ clear all; clc;
 % diseño del filtro
 m = [1 1 0 0];
 o = 100;
-fprintf('para facilitar la revision se desplegaran instrucciones \n para elegir el linecode y el filtro \n\r');
-disp('filtro 1 fc = 0.046')
-disp('filtro 2 fc = 0.146')
-disp('filtro 3 fc = 0.246')
-disp('filtro 4 fc = 0.546')
-disp('filtro 5 fc = 0.8')
-fc = input('seleccione numero de filtro')
-switch fc
-    case 1
-        f = [0 0.046 0.046 1];
-        f1 = fir2(o,f,m);
-    case 2
-        
-end
+% fprintf('para facilitar la revision se desplegaran instrucciones \n para elegir el linecode y el filtro \n\r');
+% disp('filtro 1 fc = 0.046')
+% disp('filtro 2 fc = 0.146')
+% disp('filtro 3 fc = 0.246')
+% disp('filtro 4 fc = 0.546')
+% disp('filtro 5 fc = 0.8')
+% fc = input('seleccione el numero que correspinde a una de las fc')
+% switch fc
+%     case 1
+%         fc = 0.046;
+%     case 2
+%         fc = 0.146;
+%     case 3
+%         fc = 0.246;
+%     case 4
+%         fc = 0.546;
+%     case 5
+%         fc = 0.8;
+% end
+% f = [0 fc fc 1];
+% fil = fir2(o,f,m);
 
 f = [0 0.046 0.046 1];
-
+f1 = fir2(o,f,m);
 % fvtool(f1)
 f = [0 0.146 0.146 1];
 f2 = fir2(o,f,m);
@@ -99,7 +106,7 @@ Ts = 1/Fs;
 Rs = Fs / mp;
 pbase = rectwin(mp); % Pulso completo;
 pM = [-ones(1,mp/2) ones(1,mp/2)]; %pulso base
-wvtool(pM);
+% wvtool(pM);
 sym = (bits * 2)-1;
 s = zeros(1,numel(bits)*mp);% tren de impulsos
 s(1:mp:end) = sym; %tren
@@ -137,6 +144,8 @@ subplot(4,2,6); pwelch(unrz_f2,[],[],[],Fs,'power'); title('PSD of Unipolar NRZ 
 unrz_f3 = conv(f3,unrz);
 subplot(4,2,7); stem(unrz_f3(1:mp*16)); title('Unipolar NRZ fc = 0.246');
 subplot(4,2,8); pwelch(unrz_f3,[],[],[],Fs,'power'); title('PSD of Unipolar NRZ fc = 0.246');
+
+unrz_f5 = conv(f5,unrz);
 %% Filtre la señal Polar NRZ con los tres filtros. La salida del filtro representa la señal recibida
 figure;
 subplot(4,2,1); stem(pnrz(1:mp*16)); title('Polar NRZ');
@@ -153,6 +162,8 @@ subplot(4,2,6); pwelch(pnrz_f2,[],[],[],Fs,'power'); title('PSD of Polar NRZ fc 
 pnrz_f3 = conv(f3,pnrz);
 subplot(4,2,7); stem(pnrz_f3(1:mp*16)); title('Polar NRZ fc = 0.246');
 subplot(4,2,8); pwelch(pnrz_f3,[],[],[],Fs,'power'); title('PSD of Polar NRZ fc = 0.046');
+% filter 0.8
+pnrz_f5 = conv(f5,pnrz);
 %% Filtre la señal Manchester con los tres filtros. La salida del filtro representa la señal recibida
 figure;
 subplot(4,2,1); stem(xM(1:mp*16)); title('Manchester');
@@ -188,9 +199,10 @@ bnrz_f3 = conv(f3,bnrz);
 subplot(4,2,7); stem(bnrz_f3(1:mp*16)); title('Bipolar NRZ fc = 0.246');
 subplot(4,2,8); pwelch(bnrz_f3,[],[],[],Fs,'power'); title('PSD of Bipolar NRZ fc = 0.246');
 
+bnrz_f5 = conv(f5,bnrz);
 %% instantes de observación & umbral de desicion
 
-% % % % % % % % % % % % % % % % % % % % Unipolar NRZ 
+% % % % % % % % % % % % % % % % % % % % % % % % % % Unipolar NRZ 
 y_s_unrz_f1 = unrz_f1(55:mp:end);
 numel(y_s_unrz_f1) % 8718
 y_s_unrz_f1 = y_s_unrz_f1(1:8712);
@@ -212,7 +224,14 @@ y_s_unrz_f3 = y_s_unrz_f3(1:8712);
 sym_Rx_unrz_f3 = sign(y_s_unrz_f3 - 0.5);
 bits_Rx_unrz_f3 = (sym_Rx_unrz_f3 +1)/2;
 
-% % % % % % % % % % % % % % % % % % % % Polar NRZ 
+y_s_unrz_f5 = unrz_f5(55:mp:end);
+numel(y_s_unrz_f5) % 8718
+y_s_unrz_f5 = y_s_unrz_f5(1:8712);
+% scatterplot(y_s_unrz_f5)
+sym_Rx_unrz_f5 = sign(y_s_unrz_f5 - 0.5);
+bits_Rx_unrz_f5 = (sym_Rx_unrz_f5 +1)/2;
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % Polar NRZ 
 y_s_pnrz_f1 = pnrz_f1(55:mp:end);
 numel(y_s_pnrz_f1) % 8718
 y_s_pnrz_f1 = y_s_pnrz_f1(1:8712);
@@ -234,7 +253,14 @@ y_s_pnrz_f3 = y_s_pnrz_f3(1:8712);
 sym_Rx_pnrz_f3 = sign(y_s_pnrz_f3);
 bits_Rx_pnrz_f3 = (sym_Rx_pnrz_f3 +1)/2; % bits_Rx_pnrz_f3 es lo que se va a reconstruir
 
-% % % % % % % % % % % % % % % % % % % % Manchester 
+y_s_pnrz_f5 = pnrz_f5(55:mp:end);
+numel(y_s_pnrz_f5) % 8718
+y_s_pnrz_f5 = y_s_pnrz_f5(1:8712);
+% scatterplot(y_s_pnrz_f5)
+sym_Rx_pnrz_f5 = sign(y_s_pnrz_f5);
+bits_Rx_pnrz_f5 = (sym_Rx_pnrz_f5 +1)/2; % bits_Rx_pnrz_f3 es lo que se va a reconstruir
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % Manchester 
 y_s_xM_f1 = xM_f1(53:mp:end);
 numel(y_s_xM_f1) % 8718
 y_s_xM_f1 = y_s_xM_f1(1:8712);
@@ -242,7 +268,7 @@ y_s_xM_f1 = y_s_xM_f1(1:8712);
 sym_Rx_xM_f1 = sign(y_s_xM_f1);
 bits_Rx_xM_f1 = (sym_Rx_xM_f1 +1)/2;
 % not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
-bits_Rx_xM_f1 = not(bits_Rx_xM_f1)
+bits_Rx_xM_f1 = not(bits_Rx_xM_f1);
 
 y_s_xM_f2 = xM_f2(53:mp:end);
 numel(y_s_xM_f2) % 8718
@@ -251,7 +277,7 @@ y_s_xM_f2 = y_s_xM_f2(1:8712);
 sym_Rx_xM_f2 = sign(y_s_xM_f2);
 bits_Rx_xM_f2 = (sym_Rx_xM_f2 +1)/2; 
 % not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
-bits_Rx_xM_f2 = not(bits_Rx_xM_f2)
+bits_Rx_xM_f2 = not(bits_Rx_xM_f2);
 
 y_s_xM_f3 = xM_f3(53:mp:end);
 numel(y_s_xM_f3) % 8718
@@ -260,9 +286,8 @@ y_s_xM_f3 = y_s_xM_f3(1:8712);
 sym_Rx_xM_f3 = sign(y_s_xM_f3);
 bits_Rx_xM_f3 = (sym_Rx_xM_f3 +1)/2;
 % not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
-bits_Rx_xM_f3 = not(bits_Rx_xM_f3) 
+bits_Rx_xM_f3 = not(bits_Rx_xM_f3);
 
-%% 
 y_s_xM_f5 = xM_f5(53:mp:end);
 numel(y_s_xM_f5) % 8718
 y_s_xM_f5 = y_s_xM_f5(1:8712);
@@ -270,10 +295,9 @@ y_s_xM_f5 = y_s_xM_f5(1:8712);
 sym_Rx_xM_f5 = sign(y_s_xM_f5);
 bits_Rx_xM_f5 = (sym_Rx_xM_f5 +1)/2;
 % not en el receptor de los bits debido a que escogi una convención de Manchester opcion B 
-bits_Rx_xM_f5 = not(bits_Rx_xM_f5)
+bits_Rx_xM_f5 = not(bits_Rx_xM_f5);
 
-%%
-% % % % % % % % % % % % % % % % % % % % Bipolar NRZ 
+% % % % % % % % % % % % % % % % % % % % % % % % % % Bipolar NRZ 
 y_s_bnrz_f1 = bnrz_f1(55:mp:end);
 numel(y_s_bnrz_f1) % 8718
 y_s_bnrz_f1 = y_s_bnrz_f1(1:8712);
@@ -297,34 +321,103 @@ y_s_bnrz_f3 = y_s_bnrz_f3(1:8712);
 y_s_bnrz_f3 = abs(y_s_bnrz_f3); 
 sym_Rx_bnrz_f3 = sign(y_s_bnrz_f3 - 0.5);
 bits_Rx_bnrz_f3 = (sym_Rx_bnrz_f3 +1)/2;
-%%
-% bR = reshape(bits_Rx_unrz_f1,[8,1089]);
-% % isequal(bR,b)
-% bR = bR';
-% lena = reshape(bi2de(bR),size(lenarec));
-% isequal(lenarec,lena)
-% figure;
-% imshow(uint8(lena))
-% %% 
-% %%
-% bR = reshape(bits_Rx_unrz_f2,[8,1089]);
-% % isequal(bR,b)
-% bR = bR';
-% lena = reshape(bi2de(bR),size(lenarec));
-% isequal(lenarec,lena)
-% figure;
-% imshow(uint8(lena))
-%% Para reconstruir la imagen hay que cambiar el primer argumento del reshape por la variable
-%%
-bR = reshape(bits_Rx_xM_f5,[8,1089]);
+
+y_s_bnrz_f5 = bnrz_f5(55:mp:end);
+numel(y_s_bnrz_f5) % 8718
+y_s_bnrz_f5 = y_s_bnrz_f5(1:8712);
+% scatterplot(y_s_bnrz_f5)
+y_s_bnrz_f5 = abs(y_s_bnrz_f5); 
+sym_Rx_bnrz_f5 = sign(y_s_bnrz_f5 - 0.5);
+bits_Rx_bnrz_f5 = (sym_Rx_bnrz_f5 +1)/2;
+%% reconstruir imagen
+bR = reshape(bits_Rx_unrz_f1,[8,1089]);
 % isequal(bR,b)
 bR = bR';
 lena = reshape(bi2de(bR),size(lenarec));
-isequal(lenarec,lena)
+% isequal(lenarec,lena)
 figure;
-imshow(uint8(lena))
+subplot(3,4,1); imshow(uint8(lena)); title('unrz.046');
 
-% bits_Rx_bnrz_f3
+bR = reshape(bits_Rx_pnrz_f1,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,2); imshow(uint8(lena)); title('pnrz.046');
+
+bR = reshape(bits_Rx_bnrz_f1,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,3); imshow(uint8(lena)); title('bnrz.046');
+
+bR = reshape(bits_Rx_xM_f1,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,4); imshow(uint8(lena)); title('m.046');
+
+
+bR = reshape(bits_Rx_unrz_f2,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,5); imshow(uint8(lena)); title('unrz.146');
+
+bR = reshape(bits_Rx_pnrz_f2,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,6); imshow(uint8(lena)); title('pnrz.146');
+
+bR = reshape(bits_Rx_bnrz_f2,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,7); imshow(uint8(lena)); title('bnrz.146');
+
+bR = reshape(bits_Rx_xM_f2,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,8); imshow(uint8(lena)); title('m.146');
+
+bR = reshape(bits_Rx_unrz_f3,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,9); imshow(uint8(lena)); title('unrz.246');
+
+bR = reshape(bits_Rx_pnrz_f3,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,10); imshow(uint8(lena)); title('pnrz.246');
+
+bR = reshape(bits_Rx_bnrz_f3,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,11); imshow(uint8(lena)); title('bnrz.246');
+
+bR = reshape(bits_Rx_xM_f3,[8,1089]);
+% isequal(bR,b)
+bR = bR';
+lena = reshape(bi2de(bR),size(lenarec));
+% isequal(lenarec,lena)
+subplot(3,4,12); imshow(uint8(lena)); title('m.246');
+
+%% errores
+sum(xor(bits_Rx_xM_f1,bits'))
 %% Osciloscopio
 % Fs = 44100;
 % Fs = 48000;
@@ -338,3 +431,33 @@ Ep = sum(pulso.*pulso) % energía del pulso
 E1 = max(conv(pulso,fliplr(pulso))) % máximo de la convolución
 E2 = conv(pulso,fliplr(pulso));
 E2(100) % elemento 100 de la convolución
+%% ejercicio 4
+clc; clear all;
+% Genere un pulso triangular de 
+L = 100 % muestras y con energía igual a 1
+Ep = sum(triang(L).*triang(L));
+Triang_pulse = (1/sqrt(Ep))*triang(L); % pulso triangular de 100 muestras
+ETp = sum(Triang_pulse.*Triang_pulse) % energía del pulso
+
+Ep = sum(gausswin(L).*gausswin(L))
+Gauss_pulse = (1/sqrt(Ep))*gausswin(L); Ep = sum(Gauss_pulse.*Gauss_pulse) % energía del pulso
+subplot(2,2,1); plot(Gauss_pulse); title(['E = ',num2str(Ep)])
+
+Ep = sum(chebwin(L).*chebwin(L));
+Cheby_pulse = (1/sqrt(Ep))*chebwin(L); Ep = sum(Cheby_pulse.*Cheby_pulse) % energía del pulso
+subplot(2,2,2); plot(Cheby_pulse); title(['E = ',num2str(Ep)])
+
+Ep = sum(kaiser(L).*kaiser(L));
+Kaiser_pulse =  (1/sqrt(Ep))*kaiser(L);  Ep = sum(Kaiser_pulse.*Kaiser_pulse) % energía del pulso
+subplot(2,2,3); plot(Kaiser_pulse); title(['E = ',num2str(Ep)])
+
+Ep = sum(tukeywin(L).*tukeywin(L));
+Tukey_pulse =  (1/sqrt(Ep))*tukeywin(L); Ep = sum(Tukey_pulse.*Tukey_pulse) % energía del pulso
+subplot(2,2,4); plot(Tukey_pulse); title(['E = ',num2str(Ep)])%title(Ep)
+
+% Si quisera obtener la señal con valor de energía 5
+% Ep = sum(tukeywin(L).*tukeywin(L));
+% Tukey_pulse =  (sqrt(5)/sqrt(Ep))*tukeywin(L); Ep = sum(Tukey_pulse.*Tukey_pulse) % energía del pulso
+% subplot(2,2,4); plot(Tukey_pulse); title(['E = ',num2str(Ep)])%title(Ep)
+
+% Obtenga el valor máximo de la corre
