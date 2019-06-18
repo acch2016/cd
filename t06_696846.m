@@ -104,7 +104,7 @@ Fs = 96000;
 Ts = 1/Fs;
 % The bit rate is Rb= Rs= Fs / mp, because 1 bit= 1 %symbol and % every symbol has mpsamples per bit
 Rs = Fs / mp;
-pbase = rectwin(mp); % Pulso completo;
+% pbase = rectwin(mp); % Pulso completo;
 pM = [-ones(1,mp/2) ones(1,mp/2)]; %pulso base
 % wvtool(pM);
 sym = (bits * 2)-1;
@@ -185,7 +185,7 @@ xM_f5 = conv(f5,xM);
 %% Filtre la señal Bipolar nRZ con los tres filtros. La salida del filtro representa la señal recibida
 figure;
 subplot(4,2,1); stem(bnrz(1:mp*16)); title('Bipolar NRZ');
-subplot(4,2,2);pwelch(bnrz,[],[],[],Fs,'power'); title('PSD of Bipolar NRZ');
+subplot(4,2,2); pwelch(bnrz,[],[],[],Fs,'power'); title('PSD of Bipolar NRZ');
 % filter 0.046
 bnrz_f1 = conv(f1,bnrz);
 subplot(4,2,3); stem(bnrz_f1(1:mp*16)); title('Bipolar NRZ fc = 0.046');
