@@ -12,6 +12,7 @@ info = audioinfo('sippur.wav')
 yizq = y(:,1);
 yder = y(:,2);
 y = (yizq+yder)/2; %convertir el audio a mono
+% audiowrite('/home/acc/Documents/MATLAB/ComunicacionesDigitales/sippur.wav', y, Fs,'BitsPerSample',16);
 subplot(2,1,1); pwelch(y,[],[],[],Fs,'power'); title('PSD of original signal');
 % audio = audioplayer(y,Fs);
 % play(audio);
@@ -56,6 +57,18 @@ for i = 1:numel(PN)
     audiowrite(['/home/acc/Documents/MATLAB/ComunicacionesDigitales/sippur', num2str(round(SNRdB(i))), '.wav'], y, Fs,'BitsPerSample',16);
 end
 % numel(Noise)
-%%
-fileID = fopen('/home/acc/Documents/MATLAB/ComunicacionesDigitales/sippur.wav')
-file = fread(fileID)
+%% Convert to binary
+% fileID = fopen('/home/acc/Documents/MATLAB/ComunicacionesDigitales/sippur.wav');
+% file = fread(fileID);
+% fbit = de2bi(file(:),8);
+%% Convert to binary
+wavdata = audioread('/home/acc/Documents/MATLAB/ComunicacionesDigitales/sippur.wav');
+b = de2bi( typecast(single(wavdata), 'uint16'), 16  );
+b=b';
+bits=b(:);
+%% Recover test
+bR = reshape(bits,size(b));
+% isequal(bR,b)
+bR = bR';
+wavdata2 = reshape( typecast( bi2de(bR), 'single' ), size(wavdata) );
+%% 

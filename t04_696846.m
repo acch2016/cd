@@ -11,7 +11,7 @@ s1(s1==0) = -1;
 s = zeros(1,(numel(b)-1)*mp+1);
 s(1:mp:end) = s1;
 x = conv(s,pbase);
-stem(x)
+% stem(x)
 %% 2da sección
 load lena512.mat
 % whos('-file','lena512.mat')
