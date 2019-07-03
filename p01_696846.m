@@ -58,6 +58,8 @@ for i = 1:numel(PN)
 end
 % numel(Noise)
 %% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % PARTE DIGITAL
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % 
 % % % % % % % % % se puede correr el codigo sin ejecutar la parte analogica
 % % % % % % % % %
 clc;clear
@@ -90,7 +92,7 @@ xq_int = round(x*swing+swing);
 xq_bin = de2bi(xq_int,b,'left-msb');
 xq_bin = xq_bin';
 bits = xq_bin(:);
-%% Design SRRC
+%% Diseño del pulso base SRRC
 beta = 0.35;
 B = 15e3;
 Rb = 2*B /(1+beta);
@@ -101,9 +103,9 @@ D = 6;
 Tp=1/Rb;
 Ts=1/fs;
 type = 'srrc';
-energy = 1;
+energy = Tp;
 [p t] = rcpulse(beta,D,Tp,Ts,type,energy);
-% wvtool(p)
+wvtool(p)
 % fvtool(p)
 % plot(t,p)
 e = Ts*p*p'
@@ -114,23 +116,30 @@ s = zeros(1,numel(bits)*mp);
 s(1:mp:end) = sym; % tren de impulsos
 pnrz = conv(p, s); % tren de pulsos % Shaping Pulse
 % figure; plot(pnrz(1+80:mp*16+80)); title('polar NRZ');
-%% Normalice el tren de pulsos para que tenga potencia unitaria
-py = sum(pnrz.^2)/numel(pnrz) % 656.0370
+%% 6. Normalice el tren de pulsos para que tenga potencia unitaria
+% Si se diseña el pulso base con energia = Tp, ya no es necesario este paso
+py = sum(pnrz.^2)/numel(pnrz) 
 pnrz = pnrz/sqrt(py);
 py = sum(pnrz.^2)/numel(pnrz)
-%% 
+%%
+delay_pulso_base = floor(numel(p)/2);
+delay_LPF = o/2;
+delay = delay_pulso_base + delay_pulso_base + delay_LPF; %retardo para el muestreo
+
 step = 0:0.3:3;
 N0 = 1./(B*10.^step);
 PN = B.*N0;
 SNR = 1./PN;
 SNRdB = 10*log10(SNR);
-
+errores = zeros(1,11);
+pN = zeros(1,11);
 pnrz_o = pnrz;
 for i = 1:numel(PN)
 %     7 a. Genere un vector de ruido de la potencia correspondiente y de tamaño igual al tren de pulsos generado
     Noise = sqrt(PN(i))*randn(1,numel(pnrz_o));
-    %     minN = min(Noise)
-    %     maxN = max(Noise)
+    % pN(i) = sum(Noise.^2)/numel(Noise)%Comprobacion potencia ruido pN==PN
+    % minN = min(Noise)
+    % maxN = max(Noise)
 %     7 b. Al tren de pulsos generado añadale el ruido AWGN
     pnrz = pnrz_o+Noise;
 %     8. Filtre el tren de pulsos más ruido con el LPF en el receptor
@@ -138,12 +147,14 @@ for i = 1:numel(PN)
 %     9. Pase la salida del filtro LPF del receptor por el filtro acoplado
     pnrz = conv(p, pnrz); %match filter
 %     realice el muestreo a la salida del filtro receptor
-    y_s = pnrz(81:mp:end);
+    y_s = pnrz(delay+1:mp:end);
 %     umbral de desicion e instante de observacion
 %     numel(y_s)
-    y_s = y_s(1:numel(bits));
-    sym_Rx = sign(y_s);
+    y_s = y_s(1:numel(bits)); % ignorar el transitorio
+%     samples (symbols) to bits
+    sym_Rx = sign(y_s); 
     bits_Rx = (sym_Rx +1)/2; % bits_Rx es lo que se va a reconstruir
+%     errores(i) = sum(xor(bits,bits_Rx'))
 %     11. Reconstruccion
     Mbits = reshape( bits_Rx', size(xq_bin) );
     Mint = reshape( bi2de(Mbits', 'left-msb'), size(x) );
@@ -154,3 +165,28 @@ for i = 1:numel(PN)
     wavdata2 = rescale(Mint,-1,1);
     audiowrite(['/home/acc/Documents/MATLAB/ComunicacionesDigitales/Dsippur', num2str(round(SNRdB(i))), '.wav'], wavdata2, Fs,'BitsPerSample',16);
 end
+%% Pregunta 2 
+
+B = 15e3;
+step = 0:0.3:3;
+N0 = 1./(B*10.^step); % valor de N0 utilizado en esta práctica
+
+Rb = 16*44100;
+B = Rb*1.35/2; % ancho de banda comunicación en tiempo real
+
+% Si no cambiamos la potencia transmitida, 
+% ¿cual seria el SNR? Encuentre una formula 
+% y además calculelo para cada valor de N0 utilizado en esta practica
+PN = B.*N0;
+SNR = 1./PN;
+SNRdB = 10*log10(SNR);
+%% Pregunta 3 potencia Tx para lograr un SNR de 15dB
+B = 15e3;
+step = 0:0.3:3;
+N0 = 1./(B*10.^step); % valor de N0 utilizado en esta práctica
+
+Rb = 16*44100;
+B = Rb*1.35/2; % ancho de banda comunicación en tiempo real
+
+PN = B.*N0;
+Ps = PN*10^(15/10); %potencia Tx
