@@ -1,3 +1,5 @@
+%% PARTE I
+clear;clc
 %% Tx
 Fs = 192e3;
 Ts = 1/Fs;
@@ -33,26 +35,22 @@ y = randn ( 1, M ) ;
 % pn = sum(y.^2)/numel(y)
 soundsc(y,Fs);
 % figure('Position',[100, 100, 250, 250]); plot(t,y)
-figure('Position',[100, 100, 300, 250]); pwelch(y,500,300,500,'one-side', 'power', Fs)
-%% e
-
-%% f
-clc;clear;
+figure('Position',[100, 100, 500, 200]); pwelch(y,500,300,500,'one-side', 'power', Fs)
+%% Chirp
+clc;clear
 Fs = 44.1e3;
 Ts =1/Fs;
 t = 0:Ts:5;
 y = chirp(t,100,5,20000,'linear');
 soundsc(y,Fs);
-figure('Position',[100, 100, 400, 200]); pspectrum(y,Fs,'spectrogram','TimeResolution',0.2, 'OverlapPercent',99,'Leakage',0.85)
-figure('Position',[100, 100, 400, 200]); pwelch(y,500,300,500,'one-side', 'power', Fs)
-
-% pwelch(y,500,300,500,'one-side', 'power', Fs)
-%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % FASE II Tx
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+figure('Position',[100, 100, 500, 200]); pspectrum(y,Fs,'spectrogram','TimeResolution',0.2, 'OverlapPercent',99,'Leakage',0.85)
+figure('Position',[100, 100, 500, 200]); pwelch(y,500,300,500,'one-side', 'power', Fs)
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % FASE II Tx
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clc; clear;
 %% Diseño del pulso base SRRC
 beta = 0.5;
@@ -79,10 +77,10 @@ load lena512.mat
 lenarec=lena512(252:284,318:350);
 % imshow(uint8(lenarec))
 b=de2bi(lenarec,8);
-% b=de2bi(lenarec,8,'left-msb'); % % % % % % % % % % % % % % version profesor
+% b=de2bi(lenarec,8,'left-msb'); % % % % % % % % % % % % % version profesor
 b=b';
 bits=b(:);
-%%
+%% [ Preambulo Header Payload ]
 pr = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1];
 altoancho =  de2bi(size(lenarec), 8, 'left-msb');
 header = altoancho(1,:);
@@ -98,17 +96,18 @@ pnrz = conv(p, s); %tren de pulsos
 % ylabel('Amplitude (V)')
 % xlabel('Time (s)')
 % plot(pnrz);
-%%
+%% Diagrama de ojo
 eyediagram(pnrz(3*mp:603*mp),3*mp)
+%% PSD
 figure('Position',[100, 100, 700, 250]); pwelch(pnrz(32+16:end),500,300,500,'one-side', 'power', fs);
-%%
+%% Tx
 soundsc([zeros(1, fs/2) pnrz zeros(1, fs/2)],fs);
-%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % FASE III Tx
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % FASE III Tx
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 clc; clear
 %% Diseño del pulso base SRRC
 beta = 0.5;
@@ -124,7 +123,7 @@ Ts=1/fs;
 type = 'srrc';
 energy = Tp;
 [p t] = rcpulse(beta,D,Tp,Ts,type,energy);
-% wvtool(p)
+wvtool(p)
 % fvtool(p)
 % plot(t,p)
 e = Ts*p*p'
@@ -135,10 +134,10 @@ load lena512.mat
 lenarec=lena512(252:284,318:350);
 % imshow(uint8(lenarec))
 b=de2bi(lenarec,8);
-% b=de2bi(lenarec,8,'left-msb'); % % % % % % % % % % % % % % version profesor
+% b=de2bi(lenarec,8,'left-msb'); % % % % % % % % % % % % % version profesor
 b=b';
 bits=b(:);
-%%
+%% [ Preambulo Header Payload ]
 pr = [1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1];
 altoancho =  de2bi(size(lenarec), 8, 'left-msb');
 header = altoancho(1,:);
@@ -154,11 +153,11 @@ pnrz = conv(p, s); %tren de pulsos
 % ylabel('Amplitude (V)')
 % xlabel('Time (s)')
 % plot(pnrz);
-%%
+%% AM
 Fc = 6.5e3; Fs = 96e3;
 pnrz_am = ammod(pnrz,Fc,Fs); % Modulate.
 % figure('Position',[100, 100, 700, 250]); pwelch(pnrz,500,300,500,'one-side', 'power', fs);
-figure('Position',[100, 100, 700, 250]); pwelch(pnrz_am,500,300,500,'one-side', 'power', Fs);
-fvtool([num,den]);
-%%
-soundsc([zeros(1, fs/2) pnrz_am zeros(1, fs/2)],fs);
+% figure('Position',[100, 100, 700, 250]); pwelch(pnrz_am,500,300,500,'one-side', 'power', Fs);
+% fvtool([num,den]);
+%% Tx
+soundsc([zeros(1, fs/2) pnrz_am zeros(1, fs/2)], fs);
