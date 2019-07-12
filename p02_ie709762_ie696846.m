@@ -35,7 +35,7 @@ y = randn ( 1, M ) ;
 % pn = sum(y.^2)/numel(y)
 soundsc(y,Fs);
 % figure('Position',[100, 100, 250, 250]); plot(t,y)
-figure('Position',[100, 100, 500, 200]); pwelch(y,500,300,500,'one-side', 'power', Fs)
+% figure('Position',[100, 100, 500, 200]); pwelch(y,500,300,500,'one-side', 'power', Fs)
 %% Chirp
 clc;clear
 Fs = 44.1e3;
@@ -54,7 +54,7 @@ figure('Position',[100, 100, 500, 200]); pwelch(y,500,300,500,'one-side', 'power
 clc; clear;
 %% Diseño del pulso base SRRC
 beta = 0.5;
-B = 1.8e3;
+B = 29.25e3;
 Rb = 2*B /(1+beta);
 fs = 192000;
 % fs = 96000;
